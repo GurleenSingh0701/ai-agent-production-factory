@@ -1,19 +1,25 @@
 import os
 import sys
+import types
 import litellm
 from litellm import ModelResponse
 from app.core.config import settings
 
-# --- FIX: LITELLM/LANGFUSE VERSION CONFLICT PATCH ---
-# This solves the "module 'langfuse' has no attribute 'version'" error
+# --- THE ULTIMATE VERSION PATCH ---
+# This solves the "'str' object has no attribute '__version__'" error
 try:
     import langfuse
-    if not hasattr(langfuse, "version"):
-        # We manually add the version attribute so litellm doesn't crash
-        setattr(langfuse, "version", "2.0.0") 
-except ImportError:
-    pass
-# ----------------------------------------------------
+    # Create a dummy object that looks like a module
+    version_module = types.ModuleType("langfuse.version")
+    # Assign the version string to the __version__ attribute of that dummy module
+    version_module.__version__ = "2.0.0"
+    # Attach this dummy module to the langfuse package
+    setattr(langfuse, "version", version_module)
+    # Ensure it's registered in sys.modules so other libraries find it
+    sys.modules["langfuse.version"] = version_module
+except Exception as e:
+    print(f"Version patch failed, but proceeding: {e}")
+# ----------------------------------
 
 # Langfuse Setup
 os.environ["LANGFUSE_PUBLIC_KEY"] = settings.LANGFUSE_PUBLIC_KEY
