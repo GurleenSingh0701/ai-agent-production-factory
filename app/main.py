@@ -1,13 +1,17 @@
 from fastapi import FastAPI, HTTPException
 from app.schemas.agent_io import AgentRequest, AgentResponse
 from app.agents.day_01_lead_gen import LeadGenAgent # Import daily agent
+from app.agents.day_02_email_triage import EmailTriageAgent # Import day 2 agent
 import uvicorn
 
 app = FastAPI(title="AI Agent Production Factory")
 
 # Registry of agents
+
+
 AGENTS = {
     "lead_gen": LeadGenAgent(),
+    "email_triage": EmailTriageAgent(), # Add new agent
 }
 
 @app.post("/run/{agent_id}", response_model=AgentResponse)

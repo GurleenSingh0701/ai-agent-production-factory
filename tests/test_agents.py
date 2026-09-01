@@ -3,6 +3,8 @@ import asyncio
 from app.services.scraper import scrape_website
 from app.agents.day_01_lead_gen import LeadGenAgent
 
+from app.agents.day_02_email_triage import EmailTriageAgent
+
 @pytest.mark.asyncio
 async def test_scrape_website():
     res = await scrape_website("https://example.com")
@@ -18,3 +20,12 @@ async def test_lead_gen_agent_structure():
     assert "research" in graph_nodes
     assert "evaluate" in graph_nodes
     assert "score" in graph_nodes
+
+@pytest.mark.asyncio
+async def test_email_triage_agent_structure():
+    agent = EmailTriageAgent()
+    assert agent.graph is not None
+    graph_nodes = agent.graph.nodes
+    assert "triage" in graph_nodes
+    assert "draft" in graph_nodes
+

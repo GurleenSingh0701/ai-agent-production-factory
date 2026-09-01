@@ -8,6 +8,17 @@ class AgentResponse(BaseModel):
     status: str
     data: Dict[str, Any]
 
+class EmailInput(BaseModel):
+    email_body: str = Field(description="I am unhappy with my recent order #12345, it arrived broken.")
+    sender_name: str = Field(description="John Doe")
+
+class EmailTriageOutput(BaseModel):
+    category: str = Field(description="Complaint, Sales, Support, or Spam")
+    priority: str = Field(description="High, Medium, Low")
+    draft_response: str = Field(..., description="The generated professional response")
+    sentiment: str = Field(..., description="Positive, Neutral, Negative")
+
+
 # Specific schema for the Lead Gen Agent
 class LeadQualification(BaseModel):
     company_name: str = Field(description="Name of the company")
