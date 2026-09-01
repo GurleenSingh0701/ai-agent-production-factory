@@ -1,0 +1,25 @@
+[project]
+name = "ai-agent-factory"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.141.1",
+    "langfuse>=4.0.0",
+    "langgraph>=1.2.11",
+    "langsmith>=0.11.2",
+    "litellm>=1.98.0",
+    "pgvector>=0.5.0",
+    "psycopg2-binary>=2.9.12",
+    "pydantic>=2.13.5",
+    "pydantic-settings>=2.15.0",
+    "pytest>=9.1.1",
+    "python-dotenv>=1.2.3",
+    "redis>=8.1.0",
+    "requests>=2.34.2",
+    "beautifulsoup4>=4.12.0",
+    "httpx>=0.27.0",
+    "streamlit>=1.62.0",
+    "uvicorn>=0.52.4",
+]
