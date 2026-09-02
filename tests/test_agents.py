@@ -40,4 +40,13 @@ async def test_meeting_minutes_agent_structure():
     assert "extract_decisions" in graph_nodes
     assert "structure" in graph_nodes
 
+def test_clean_json_string():
+    from app.services.llm import clean_json_string
+    sample_with_json_header = 'json\n{\n  "summary": "Meeting notes"\n}'
+    assert clean_json_string(sample_with_json_header) == '{\n  "summary": "Meeting notes"\n}'
+
+    sample_with_backticks = '```json\n{\n  "summary": "Meeting notes"\n}\n```'
+    assert clean_json_string(sample_with_backticks) == '{\n  "summary": "Meeting notes"\n}'
+
+
 

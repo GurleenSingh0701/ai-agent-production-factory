@@ -27,6 +27,34 @@ litellm.success_callback = ["langfuse"]
 litellm.failure_callback = ["langfuse"]
 os.environ["OLLAMA_API_BASE"] = os.getenv("OLLAMA_API_BASE", settings.OLLAMA_API_BASE)
 
+import re
+
+def clean_json_string(text: str) -> str:
+    """Strips markdown code blocks, triple backticks, and leading/trailing noise to extract valid JSON."""
+    cleaned = text.strip()
+
+    # Strip opening/closing markdown code fences (```json ... ``` or ``` ...)
+    if cleaned.startswith("```"):
+        lines = cleaned.splitlines()
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].startswith("```"):
+            lines = lines[:-1]
+        cleaned = "\n".join(lines).strip()
+
+    # Strip standalone 'json' prefix if present
+    if cleaned.startswith("json\n") or cleaned.startswith("json\r\n"):
+        cleaned = cleaned[4:].strip()
+    elif cleaned.startswith("json"):
+        cleaned = cleaned[4:].strip()
+
+    # Extract JSON structure {...} or [...] using regex if extra text surrounds it
+    match = re.search(r"(\{[\s\S]*\}|\[[\s\S]*\])", cleaned)
+    if match:
+        return match.group(1)
+
+    return cleaned
+
 class LiteLLMService:
     async def complete(self, prompt: str, model: str = settings.DEFAULT_MODEL) -> str:
         # Cache lookup
@@ -74,8 +102,9 @@ class LiteLLMService:
             typed_response = cast(ModelResponse, response)
             
             content = typed_response.choices[0].message.content or "{}"
+            cleaned_content = clean_json_string(content)
             # Parse the string JSON into the Pydantic model
-            return response_model.model_validate_json(content)
+            return response_model.model_validate_json(cleaned_content)
         except Exception as e:
             print(f"JSON Parsing Error: {e}")
             raise e
@@ -92,6 +121,7 @@ async def call_llm(prompt: str, model: str = settings.DEFAULT_MODEL, json_mode: 
             stream=False
         )
         typed_response = cast(ModelResponse, response)
-        return typed_response.choices[0].message.content or "{}"
+        content = typed_response.choices[0].message.content or "{}"
+        return clean_json_string(content)
     return await _default_llm_service.complete(prompt, model=model)
 
