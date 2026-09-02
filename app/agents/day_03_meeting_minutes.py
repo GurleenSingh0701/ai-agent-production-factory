@@ -36,11 +36,34 @@ class MeetingMinutesAgent:
 
     async def structure_node(self, state: AgentState):
         prompt = f"""
-        Create a professional JSON object from these notes.
-        Summaries: {" ".join(state['summaries'])}
-        Actions: {"\n".join(state['action_items_raw'])}
-        Decisions: {"\n".join(state['decisions_raw'])}
-        Return ONLY valid JSON matching the MeetingMinutesResponse schema.
+        Synthesize the following notes into a single, clean JSON object.
+
+        Summaries:
+        {" ".join(state['summaries'])}
+
+        Action Items:
+        {"\n".join(state['action_items_raw'])}
+
+        Decisions:
+        {"\n".join(state['decisions_raw'])}
+
+        CRITICAL REQUIREMENT:
+        You MUST return ONLY a JSON object with EXACTLY these top-level keys:
+        - "summary": (string) Executive summary of the meeting.
+        - "action_items": (list of objects) Each object MUST contain:
+          - "assignee": (string) Person responsible for the task.
+          - "task": (string) Description of the action item.
+          - "deadline": (string or null) Target completion date if mentioned.
+        - "key_decisions": (list of strings) List of major decisions made.
+
+        Example JSON format:
+        {{
+          "summary": "High-level overview...",
+          "action_items": [
+            {{"assignee": "John Doe", "task": "Prepare report", "deadline": "Next Friday"}}
+          ],
+          "key_decisions": ["Decision 1", "Decision 2"]
+        }}
         """
         response = await self.llm.complete_json(prompt, response_model=MeetingMinutesResponse)
         return {"final_output": response}

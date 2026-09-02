@@ -29,11 +29,11 @@ class EmailTriageOutput(BaseModel):
 
 # Day 3: Meeting Minutes
 class ActionItem(BaseModel):
-    assignee: str = Field(description="Who is responsible for the task")
-    task: str = Field(description="Clear description of what needs to be done")
-    deadline: Optional[str] = Field(description="Mentioned date or timeframe, if any")
+    assignee: str = Field(default="Unassigned", description="Who is responsible for the task")
+    task: str = Field(default="", description="Clear description of what needs to be done")
+    deadline: Optional[str] = Field(default=None, description="Mentioned date or timeframe, if any")
 
 class MeetingMinutesResponse(BaseModel):
-    summary: str = Field(description="High-level overview of the meeting themes")
-    action_items: List[ActionItem] = Field(description="List of extracted tasks")
-    key_decisions: List[str] = Field(description="List of final decisions made")
+    summary: str = Field(default="", description="High-level overview of the meeting themes")
+    action_items: List[ActionItem] = Field(default_factory=list, description="List of extracted tasks")
+    key_decisions: List[str] = Field(default_factory=list, description="List of final decisions made")
