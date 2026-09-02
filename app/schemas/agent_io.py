@@ -17,6 +17,10 @@ class LeadQualification(BaseModel):
     recommended_action: str = Field(description="e.g., 'Book Call', 'Nurture', 'Discard'")
 
 # Day 2: Email Triage
+class EmailInput(BaseModel):
+    email_body: str = Field(..., description="Email text to analyze and triage")
+    sender_name: str = Field(..., description="Name of the email sender")
+
 class EmailTriageOutput(BaseModel):
     category: str = Field(description="Complaint, Sales, Support, or Spam")
     priority: str = Field(description="High, Medium, Low")

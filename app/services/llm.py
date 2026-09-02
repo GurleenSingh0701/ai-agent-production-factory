@@ -79,3 +79,19 @@ class LiteLLMService:
         except Exception as e:
             print(f"JSON Parsing Error: {e}")
             raise e
+
+_default_llm_service = LiteLLMService()
+
+async def call_llm(prompt: str, model: str = settings.DEFAULT_MODEL, json_mode: bool = False) -> str:
+    """Helper function for calling LLM (used by day_01 and day_02 agents)."""
+    if json_mode:
+        response = await litellm.acompletion(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+            stream=False
+        )
+        typed_response = cast(ModelResponse, response)
+        return typed_response.choices[0].message.content or "{}"
+    return await _default_llm_service.complete(prompt, model=model)
+
