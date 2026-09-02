@@ -4,6 +4,7 @@ from app.services.scraper import scrape_website
 from app.agents.day_01_lead_gen import LeadGenAgent
 
 from app.agents.day_02_email_triage import EmailTriageAgent
+from app.agents.day_03_meeting_minutes import MeetingMinutesAgent
 
 @pytest.mark.asyncio
 async def test_scrape_website():
@@ -28,4 +29,15 @@ async def test_email_triage_agent_structure():
     graph_nodes = agent.graph.nodes
     assert "triage" in graph_nodes
     assert "draft" in graph_nodes
+
+@pytest.mark.asyncio
+async def test_meeting_minutes_agent_structure():
+    agent = MeetingMinutesAgent()
+    assert agent.workflow is not None
+    graph_nodes = agent.workflow.nodes
+    assert "summarize" in graph_nodes
+    assert "extract_actions" in graph_nodes
+    assert "extract_decisions" in graph_nodes
+    assert "structure" in graph_nodes
+
 
